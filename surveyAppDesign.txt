@@ -1,0 +1,73 @@
+metadata:
+{
+	surveyId : 100,
+	type : maxdiff / ranking / rating,
+	clientId : uuid,
+	timestamp: seconds from Unix Epoch
+},
+// data array, one element per sentence to score
+{
+	[
+		{ best: 1, worst: 2},
+		{ best: 1, worst: 3},
+		...
+		
+	]
+}
+
+--------------------------------------------
+for ranking: array of arrays: each array has the rank for each system.
+
+{
+	[
+		[1,4,3,2],
+		[2,4,3,1],
+		...
+		
+	]
+}
+
+-----------------------------------------------
+for rating: array of arrays: each array shows the rating for each system.
+{
+	[
+		[3,4,3,5],
+		[2,4,3,4],
+		...
+		
+	]
+}
+
+---------------------------------------------------
+Reporting:
+/report?id=ID[&timestampLimit=X] // to limit responses received by X timestamp
+
+maxdiff: { system, votes } sorted by votes ascending, with 'worst' computed as negative votes -- we expect 2*N records, with N systems.
+ranking: sort {system, votes}
+rating: sort {system, votes as double} (avg. rating)
+
+metadata: {
+	"surveyId" : ID,
+	"type" : type,
+	"responses": total-responses
+},
+data : [
+	"system" : votes,
+	...
+]
+--------------------------------------------------------
+Database:
+
+Survey Table:
+SurveyId, Name, Type, Timestamp created, NumSystems, NumSentences
+
+Response Table:
+Id, SurveyId, UUID, Timestamp
+
+SentenceScore Table:
+ResponseId, SentenceId, Score -> array of values, either best/worst or rankings or ratings.
+
+--------------------------------------------------------
+mteval -> mt£eva$
+root -> cearoot
+
