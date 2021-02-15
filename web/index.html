@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset='UTF-8'>
+	
+	<title>Radio Grid</title>
+	
+	<link rel='stylesheet' href='css/style.css'>
+	
+	<style>
+		table {
+		    border-collapse: collapse;    
+		}
+		td, th {
+		    border: 1px solid #ccc;
+		    padding: 10px;
+		}
+		th:empty {
+		    border: 0;
+		}
+	</style>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<script>
+		$(function() {
+			var col, el;
+			
+			$("input[type=radio]").click(function() {
+			   el = $(this);
+			   col = el.data("col");
+			   $("input[data-col=" + col + "]").prop("checked", false);
+			   el.prop("checked", true);
+			});
+		});
+		
+		
+		$(document).ready(function(){
+			$("#btn1").click(function(){
+				//$("#results").text("Grazie!");
+				resText = '';
+				best = [];
+				worst = [];
+				$('input:radio:checked').each(function() {
+					//this loops through all checked radio buttons
+					//you can use the radio button using $(this)
+					system = $(this).attr("system");
+					sent = $(this).attr("sent"); 
+					// best (1) or worst (0)? 
+					vote = parseInt( $(this).attr("data-col") );
+					if(vote % 2 == 0) // worst
+					{
+						worst[sent] = system;
+					}
+					else // best
+					{
+						best[sent] = system;
+					}
+					//resText += ' '+ $(this).attr("name") + ' ' + $(this).attr("data-col");
+					
+				});
+				
+				/*
+				for(var i = 1; i < best.length; i++) {
+						resText += 'Good votes for system '+i+ '='+ best[i]+' '; 
+				}
+				for(var i = 1; i < worst.length; i++) {
+						resText += 'Bad votes for system '+i+ '='+ worst[i]+' '; 
+				}
+				*/
+				var sents = [];
+				for(var i = 0; i < best.length; i++) {
+					sent = { "best" : best[i] , "worst" : worst[i] };
+					sents.push(sent);
+				}
+		
+				var surveyId = $('#myForm').attr("surveyId");
+				var pdata = { id: surveyId, resp : sents };
+				
+				
+				$( "#postdata" ).text( JSON.stringify(pdata));
+				
+				var posting = $.post( 'echojson.php', JSON.stringify(pdata) );
+				
+				
+				
+				// Put the results in a div
+				posting.done(function( data ) {
+					$( "#results" ).empty().append( data );
+				});
+			
+	
+			});
+		});
+	</script>
+</head>
+<!--
+action="javascript:void(0);"
+$(document).ready(function(){
+			$("form").submit(function(){
+				$('#results').text = "grazie!";
+				return false;
+			});
+		});
+
+		$('#myForm').submit(function() {
+			// get all the inputs into an array.
+			var $inputs = $('#myForm :input');
+
+			// not sure if you wanted this, but I thought I'd add it.
+			// get an associative array of just the values.
+			var values = {};
+			$inputs.each(function() {
+				values[this.name] = $(this).val();
+			});
+
+			$('#results').text("Grazie!");
+		});
+-->
+<body>
+
+	<div id="page-wrap">
+		
+		<form id="myForm" surveyId="123">
+		<div class="question">
+		<table>
+		<tr>
+		    <th>I stare down at my shoes, watching as a fine layer of ash settles on the worn leather. </th>
+		    <th>Best</th>
+		    <th>Worst</th>
+		</tr>
+		<tr>
+		    <td>Mi guardo le scarpe e osservo il sottile strato di cenere che si deposita sulla pelle logora. </td>
+		    <td><input type="radio" name="row-1" data-col="1" system="1" sent="0"></td>
+		    <td><input type="radio" name="row-1" data-col="2" system="1" sent="0"></td>
+		</tr>
+		<tr>
+		    <td>Fisso in basso verso le mie scarpe, guardando mentre uno strato di polvere si posa sulla pelle logora.</td>
+		    <td><input type="radio" name="row-2" data-col="1" system="2" sent="0"></td>
+		    <td><input type="radio" name="row-2" data-col="2" system="2" sent="0"></td>
+		</tr>
+		<tr>
+		    <td>Fisso le mie scarpe, osservando un sottile strato di cenere che si deposita sulla pelle consumata.</td>
+		    <td><input type="radio" name="row-3" data-col="1" system="3" sent="0"></td>
+		    <td><input type="radio" name="row-3" data-col="2" system="3" sent="0"></td>
+		</tr>
+		<tr>
+		    <td>che fisso sulle mie scarpe, guardando come un sottile strato di cenere si posa sulla pelle consumata. </td>
+		    <td><input type="radio" name="row-4" data-col="1" system="4" sent="0"></td>
+		    <td><input type="radio" name="row-4" data-col="2" system="4" sent="0"></td>
+		</tr>
+		</table>
+		
+		</div>
+		<p>&nbsp;</p>
+		<div class="question">
+		<table>
+		<tr>
+		    <th>I stare down at my shoes, watching as a fine layer of ash settles on the worn leather. </th>
+		    <th>Best</th>
+		    <th>Worst</th>
+		</tr>
+		<tr>
+		    <td>Mi guardo le scarpe e osservo il sottile strato di cenere che si deposita sulla pelle logora. </td>
+		    <td><input type="radio" name="row-5" data-col="3" system="1" sent="1"></td>
+		    <td><input type="radio" name="row-5" data-col="4" system="1" sent="1"></td>
+		</tr>
+		<tr>
+		    <td>Fisso in basso verso le mie scarpe, guardando mentre uno strato di polvere si posa sulla pelle logora.</td>
+		    <td><input type="radio" name="row-6" data-col="3" system="2" sent="1"></td>
+		    <td><input type="radio" name="row-6" data-col="4" system="2" sent="1"></td>
+		</tr>
+		<tr>
+		    <td>Fisso le mie scarpe, osservando un sottile strato di cenere che si deposita sulla pelle consumata.</td>
+		    <td><input type="radio" name="row-7" data-col="3" system="3" sent="1"></td>
+		    <td><input type="radio" name="row-7" data-col="4" system="3" sent="1"></td>
+		</tr>
+		<tr>
+		    <td>che fisso sulle mie scarpe, guardando come un sottile strato di cenere si posa sulla pelle consumata. </td>
+		    <td><input type="radio" name="row-8" data-col="3" system="4" sent="1"></td>
+		    <td><input type="radio" name="row-8" data-col="4" system="4" sent="1"></td>
+		</tr>
+		</table>
+	</div>
+		
+		</form>
+		
+		<button id="btn1">Finito!</button>
+		<div><p id="postdata"></p></div>
+		
+		<p id="results"></p>
+	</div>
+	
+</body>
+
+</html>
