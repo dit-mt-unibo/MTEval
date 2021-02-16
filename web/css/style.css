@@ -4,10 +4,64 @@
 	 http://css-tricks.com
 */
 
-* { margin: 0; padding: 0; }
-body { font: 14px Georgia, serif; }
+* { margin: 5px; padding: 5px; }
+
+body {
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1.55;
+    letter-spacing: 0;
+    color: #595959;
+}
+
+h1 { 
+  display: block;
+  font-size: 2em;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  margin-left: 2em;
+  margin-right: 0;
+  font-weight: bold;
+}
 
 article, aside, figure, footer, header, hgroup,
 menu, nav, section { display: block; }
 
+p { 
+	padding: 10px 10px 10px 10px; 
+	margin-left: 2em;
+}
+	
+table { border-collapse: collapse;   }
+	td, th { border: 1px solid #ccc; padding: 10px;	}
+	th { text-align: left; }
+	th:empty { border: 0; }
+
+div.question { 
+	font-size: 16px;
+	line-height: 1;
+	color: black;
+	padding: 20px 20px 20px 20px; 
+}
+
+div.end { padding: 30px 20px 30px 20px; }
+
+/*		
 #page-wrap { width: 960px; margin: 80px auto; }
+*/
+
+.button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 6px;
+}
