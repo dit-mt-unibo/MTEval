@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Record</title>
+    <title>Risultati della valutazione</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         .wrapper{
@@ -12,6 +12,7 @@
     </style>
 </head>
 <body>
+	<h1>Risultati della valutazione</h1>
     <div class="wrapper">
 
 <?php
@@ -22,6 +23,15 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
     
 	//TODO: read survey record, so we can find name, #sentences, #systems
 	//TODO: read # of responses, so we can convert final data to %ages
+	
+	$displayrawdata = false;
+	if(isset($_GET["raw"]))
+	{
+		$rawv = strtolower($_GET["raw"]);
+		if( $rawv == "true" || intval($rawv) == 1)
+			$displayrawdata = true;
+	}
+		
 	
     // Prepare a select statement
     $sql = "select * from mteval.sentencescore where responseid in ( SELECT id FROM mteval.response where surveyid = ?)";
@@ -43,21 +53,25 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
     
 			$total_answers = mysqli_num_rows($result);
             if($total_answers > 0){
-                echo "<table class='table table-bordered table-striped'>";
-                echo "<thead>";
-                echo "<tr>";
-                echo "<th>resp#</th>";
-                echo "<th>sent#</th>";
-                echo "<th>score</th>";
-                echo "</tr>";
-                echo "</thead>";
-                echo "<tbody>";
-                while($row = mysqli_fetch_array($result)){
+				if($displayrawdata) {
+					echo "<table class='table table-bordered table-striped'>";
+					echo "<thead>";
 					echo "<tr>";
-                    echo "<td>" . $row['responseid'] . "</td>";
-                    echo "<td>" . $row['sentenceid'] . "</td>";
-                    echo "<td>" . $row['score'] . "</td>";
-                    echo "</tr>";
+					echo "<th>resp#</th>";
+					echo "<th>sent#</th>";
+					echo "<th>score</th>";
+					echo "</tr>";
+					echo "</thead>";
+					echo "<tbody>";
+				}
+                while($row = mysqli_fetch_array($result)){
+					if($displayrawdata){
+						echo "<tr>";
+						echo "<td>" . $row['responseid'] . "</td>";
+						echo "<td>" . $row['sentenceid'] . "</td>";
+						echo "<td>" . $row['score'] . "</td>";
+						echo "</tr>";
+					}
 					$scores = json_decode($row['score']);
 					
 					if( isset($best[$scores[0]]) ) 
@@ -71,8 +85,11 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 						$worst[$scores[1]] = 1;
 						
                 }
-                echo "</tbody>";                            
-                echo "</table>";
+				
+				if($displayrawdata){
+					echo "</tbody>";                            
+					echo "</table>";
+				}
                 // Free result set
                 mysqli_free_result($result);
 				
