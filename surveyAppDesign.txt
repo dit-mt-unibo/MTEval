@@ -1,3 +1,21 @@
+--------------------------------------------------------
+Database:
+
+Survey Table:
+SurveyId, Name, Type, Timestamp created, NumSystems, NumSentences, Systems
+	-> 
+
+Response Table:
+Id, SurveyId, UUID, Timestamp
+	--> al momento UUID == indirizzo IP del client, sarebbe da cambiare sia perché non sempre si ottiene un ip unico (bug funzionale), 
+	sia perché potenzialmente è un dato privato e sensibile, e quindi soggetto a GDPR e quindi richiederebbe la gestione dei dati degli utenti,
+	una liberatoria/policy per tenerli, ecc. (bug privacy). A noi interessa solo avere un id per evitare risposte multiple dallo stesso client/utente.
+	
+SentenceScore Table:
+ResponseId, SentenceId, Score -> array of values, either best/worst or rankings or ratings.
+	--> vedi esempi sotto di come rappresentare lo "score" a seconda del tipo di sistema. 
+--------------------------------------------------------
+
 metadata:
 {
 	surveyId : 100,
@@ -40,7 +58,10 @@ for rating: array of arrays: each array shows the rating for each system.
 
 ---------------------------------------------------
 Reporting:
-/report?id=ID[&timestampLimit=X] // to limit responses received by X timestamp
+/results.php?id=ID[&raw=True] 
+	TODO: [&timestampLimit=X] // to limit responses received by X timestamp
+
+	--> se il parametro 'raw' è specificato, la pagina riporta anche i record del db tali e quali, ovvero la valutazione di ogni frase, per ogni risposta. 
 
 maxdiff: { system, votes } sorted by votes ascending, with 'worst' computed as negative votes -- we expect 2*N records, with N systems.
 ranking: sort {system, votes}
@@ -55,19 +76,5 @@ data : [
 	"system" : votes,
 	...
 ]
---------------------------------------------------------
-Database:
 
-Survey Table:
-SurveyId, Name, Type, Timestamp created, NumSystems, NumSentences
-
-Response Table:
-Id, SurveyId, UUID, Timestamp
-
-SentenceScore Table:
-ResponseId, SentenceId, Score -> array of values, either best/worst or rankings or ratings.
-
---------------------------------------------------------
-mteval -> mt£eva$
-root -> cearoot
 

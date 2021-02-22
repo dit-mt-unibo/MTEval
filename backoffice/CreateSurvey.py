@@ -49,18 +49,18 @@ surveyid = int(survey_str)
 begin_html = "<!DOCTYPE html>\n<html><head><meta charset='UTF-8'><title>Valuta Traduzioni</title> " + \
              "<link rel='stylesheet' href='css/style.css'>\n" + \
              "<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'>" +\
-             "</script> " + \
+             "</script> \n" + \
              "<script type='text/javascript' src='js/maxdiff.js'></script></head>\n" + \
              "<body><h1>Valuta le traduzioni</h1>\n" + \
              "<p>Vi chiediamo di valutare delle traduzioni diverse per lo stesso testo. Per ogni frase, " +\
-             "vi preghiamo di scegliere la migliore e la peggiore traduzione tra quelle proposte.<br/>" +\
-             "Quando avete finito, cliccate sul bottone verde in fondo. <br/>Grazie!</p>" +\
+             "vi preghiamo di scegliere la migliore e la peggiore traduzione tra quelle proposte.<br/>\n" +\
+             "Quando avete finito, cliccate sul bottone verde in fondo. <br/>Grazie!</p>\n" +\
              "<div id='page-wrap'>" + \
              "<form id='myForm' surveyId='{0}'>"
 
-end_html = "</form><div class='end'><button id='btn1' class='button'>Finito!</button></div>" +\
-           "<div><p id='postdata'></p></div><p id='results'></p></div>" +\
-           "</body></html>"
+end_html = "</form><div class='end'><button id='btn1' class='button'>Finito!</button></div>\n" +\
+           "<div><p id='postdata'></p></div><p id='results'></p></div>\n" +\
+           "</body></html>\n"
 
 filename = "survey{0}.html"
 #surveyid = 42
