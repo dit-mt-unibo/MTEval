@@ -3,8 +3,8 @@
 require_once "config.php";
  
 // Define variables and initialize with empty values
-$name = $surveytype = $numsystems = "";
-$name_err = $surveytype_err = $numsystems_err = "";
+$name = $surveytype = $numsystems = $systems = "";
+$name_err = $surveytype_err = $systems_err = $numsystems_err = "";
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -35,20 +35,37 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else{
         $numsystems = $input_numsystems;
     }
+	
+	// Validate systems: must be strings separated by ; -- TODO: friendly multi-line input box, one system per box, and get numsystems automatically.
+    $input_systems = trim($_POST["systems"]);
+    if(empty($input_systems)){
+        $systems_err = "Please enter a name for each system, separated by ';'";     
+    } else { 
+		$array = explode(';', $input_systems);
+		if(count($array) != $numsystems) {
+			$systems_err = "Please enter names of ".$numsystems." systems, separated by ';'";
+		}
+		else{
+			$systems = $input_systems;
+		}
+	}
+	
+	
     
     // Check input errors before inserting in database
-    if(empty($name_err) && empty($surveytype_err) && empty($numsystems_err)){
+    if(empty($name_err) && empty($surveytype_err) && empty($numsystems_err) && empty($systems_err)){
         // Prepare an insert statement
-        $sql = "INSERT INTO survey (name, type, numsystems) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO survey (name, type, numsystems, systems) VALUES (?, ?, ?, ?)";
          
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "sss", $param_name, $param_surveytype, $param_numsystems);
+            mysqli_stmt_bind_param($stmt, "ssss", $param_name, $param_surveytype, $param_numsystems, $param_systems);
             
             // Set parameters
             $param_name = $name;
             $param_surveytype = $surveytype;
             $param_numsystems = $numsystems;
+			$param_systems = $systems;
             
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
@@ -64,7 +81,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 			mysqli_stmt_close($stmt);
         }
 		else
-			echo("porca miseria!");
+			echo("can't prepare statement!");
          
     }
     
@@ -110,6 +127,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             <label>Num of Systems</label>
                             <input type="text" name="numsystems" class="form-control" value="<?php echo $numsystems; ?>">
                             <span class="help-block"><?php echo $numsystems_err;?></span>
+                        </div>
+						<div class="form-group <?php echo (!empty($systems_err)) ? 'has-error' : ''; ?>">
+                            <label>System names (separated by ;)</label>
+                            <input type="text" name="systems" class="form-control" value="<?php echo $systems; ?>">
+                            <span class="help-block"><?php echo $systems_err;?></span>
                         </div>
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="index.php" class="btn btn-default">Cancel</a>

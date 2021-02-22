@@ -84,7 +84,7 @@ function GetIp(){
 			
 		}
 		else
-			echo("porca miseria!");
+			echo("Cannot prepare sql statement, please try again later.");
 	}
     
     // Close connection

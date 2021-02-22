@@ -12,7 +12,7 @@
     </style>
 </head>
 <body>
-	<h1>Risultati della valutazione</h1>
+	<h1><center>Risultati della valutazione</center></h1>
     <div class="wrapper">
 
 <?php
@@ -20,9 +20,30 @@
 if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
     // Include config file
     require_once "config.php";
-    
+	
+    $systems = [];
+	$surveyName = "";
+	
 	//TODO: read survey record, so we can find name, #sentences, #systems
-	//TODO: read # of responses, so we can convert final data to %ages
+	$sqlsurvey = "select * from mteval.survey where surveyid = ".trim($_GET["id"]);
+	$resultSurvey = $link->query($sqlsurvey);
+	if ($resultSurvey->num_rows > 0) {
+		// output data of each row
+		while($row = $resultSurvey->fetch_assoc()) {
+			// surveyid, name, type, created, numsystems, numsentences, systems
+			$surveyName = $row["name"];
+			$systems = explode(';',$row["systems"]);
+			$numsystems = $row["numsystems"];
+			if($numsystems != count($systems))
+				echo "Found ".$systems." instead of ".$numsystems;
+			
+			break; // we only expect one record.
+		}
+	} else {
+		echo "0 results";
+	}
+	
+	echo "<h1><center>" . $surveyName . "</center></h1>";
 	
 	$displayrawdata = false;
 	if(isset($_GET["raw"]))
@@ -105,17 +126,17 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 		
 		echo "<table class='table table-bordered table-striped'>";
 		echo "<thead><tr>";
-		echo "<th>System</th>";
-        echo "<th>Best</th>";
-        echo "<th>Worst</th>";
+		echo "<th>Sistema</th>";
+        echo "<th>Migliore</th>";
+        echo "<th>Peggiore</th>";
         echo "</tr></thead>";
 		$len = count($best);
 		for ($i = 0; $i < $len; $i++) {
 			$bestpercent = $best[$i]*100 / $total_answers;
 			$worstpercent = $worst[$i]*100 / $total_answers;
-			echo "<tr><td>" . $i+1 . "</td>";
-			echo "<td>" . $best[$i] . " (" . $bestpercent . "%)</td>";
-			echo "<td>" . $worst[$i] . " (" . $worstpercent . "%)</td>";
+			echo "<tr><td>" . $systems[$i] . "</td>";
+			echo "<td>" . $best[$i] . " (" . number_format($bestpercent, 2, ',', '') . "%)</td>";
+			echo "<td>" . $worst[$i] . " (" . number_format($worstpercent, 2, ',', '') . "%)</td>";
 			echo "</tr>";  
 		}
 		echo "</table>";

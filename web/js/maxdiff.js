@@ -70,7 +70,11 @@
 				
 				// Put the results in a div
 				posting.done(function( data ) {
-					$( "#results" ).empty().append( data );
+					thankyou = "Grazie per aver partecipato a questa valutazione! <br/>"+
+						"Puoi utilizzare questo link per vedere i risultati raccolti finora: "+
+						"<a href='results.php?id="+surveyId+"'>Risultati</a>";
+					$( "#results" ).empty().append( thankyou );
+					
 				});
 				
 				submitted = true;
