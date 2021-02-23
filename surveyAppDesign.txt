@@ -15,7 +15,28 @@ SentenceScore Table:
 ResponseId, SentenceId, Score -> array of values, either best/worst or rankings or ratings.
 	--> vedi esempi sotto di come rappresentare lo "score" a seconda del tipo di sistema. 
 --------------------------------------------------------
+General architecture:
 
+Surveys are simple html pages (a form), which are produced by a 'backoffice' module (currently in Python).
+
+The logic to check the form and submit data is in javascript, kept external to the survey, so it can be developed 
+and maintained independently from the html.
+
+The middle-tier or "web backend" is in php, which communicates with MySql db for storage.
+The php is kept as simple as possible, almost like an API layer. 
+ - postprocess.php is in fact an API taking json form as input, and returning Ok/Error
+ - results.php takes a survey id and returns a very simple html table with the current results. 
+	It could easily be changed to return ONLY the table or just data in json format and have a front-end page 
+	do all the formatting to html.
+
+I would like to add/tweak code to support Ranking and Rating and post examples of those.
+
+I would also like to add a module to compute Bert score for each alternative set - 
+	once an admin defines a translation as 'reference'.
+	
+And we need a proper Admin portion of the web with authentication separate from the public web pages.
+
+--------------------------------------------------------
 metadata:
 {
 	surveyId : 100,
