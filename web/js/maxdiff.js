@@ -62,7 +62,8 @@
 				var pdata = { id: surveyId, resp : sents };
 				
 				
-				$( "#postdata" ).text( JSON.stringify(pdata));
+				// this will display the full data being posted. Useful for debugging
+				// $( "#postdata" ).text( JSON.stringify(pdata));
 				
 				var posting = $.post( 'processresponse.php', JSON.stringify(pdata) );
 				

@@ -1,6 +1,7 @@
 # create survey to compare translations in maxdiff way (pick best and worst of each system)
 # ask for directory to look in:
 import glob
+import random
 from os import path
 
 input_dir = input("Folder containing original.txt and translation files: ")
@@ -68,13 +69,19 @@ filename = "survey{0}.html"
 # num_sentences = 3
 # original = ["the first", "the second", "the third"]
 
+# create an array with system IDs (0 to num_systems)
+sys_arr = []
+sys_arr = [k for k in range(num_systems)]
+
 with open(str.format(filename, surveyid), "w") as f:
     f.write(str.format(begin_html, surveyid))
     tr_count = 1  # count individual translation, for each row
     for i in range(num_sentences):
         f.write("<div class='question'><table>")
         f.write("<tr><th> " + original[i] + "</th><th>Best</th><th>Worst</th></tr>")
-        for j in range(num_systems):
+        # shuffle the list of systems, so they appear in a different order each time.
+        random.shuffle(sys_arr)
+        for j in sys_arr:        # for j in range(num_systems):
             f.write("<tr><td> " + translation[i][j] + "</td>")
             # data-col must be one for all 'best' and another for all 'worst' of the same sentence to eval
             f.write("<td><input type='radio' name='row-" + str(tr_count) + "' data-col='" + str(i*2+1) + "' system='" + str
