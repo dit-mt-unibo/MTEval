@@ -57,8 +57,8 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
     // Prepare a select statement
     $sql = "select * from mteval.sentencescore where responseid in ( SELECT id FROM mteval.response where surveyid = ?)";
     
-	$best = array_fill(0, 4, 0);
-	$worst = array_fill(0, 4, 0);
+	$best = array_fill(0, $numsystems, 0);
+	$worst = array_fill(0, $numsystems, 0);
 	$total_answers = 0;
 	
     if($stmt = mysqli_prepare($link, $sql)){
@@ -115,9 +115,9 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
                 mysqli_free_result($result);
 				
             } else{
-                // URL doesn't contain valid id parameter. Redirect to error page
-                header("location: error.php");
-                exit();
+                // No votes yet.
+				echo "Nessuna valutazione ricevuta per questo id (" . $param_id . ")";
+				$total_answers = 1;
             }
             
         } else{
