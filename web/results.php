@@ -10,9 +10,82 @@
             margin: 0 auto;
         }
     </style>
+	<link rel="stylesheet" href="css/date.css">    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+$(function () {
+  
+	$( "#from" ).datepicker({
+	  dateFormat: 'yy-mm-dd',
+	  defaultDate: ( ff = getQueryVariable("from")) == null ? new Date() : ff,
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+	
+	$("#from").on('focus', function() { $(this).datepicker("show"); });
+	
+    $( "#to" ).datepicker({
+	  dateFormat: 'yy-mm-dd',
+      defaultDate: "+1w",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
+	
+	$("#to").on('focus', function() { $(this).datepicker("show"); });
+	
+	
+$("#furbo").click(function() {
+	var from = $('#from').val();
+	var to = $('#to').val();
+	if((from > "") && (to > "")) {
+		var dateValue = "id = " + getQueryVariable("id") + " da " + from + " fino a "+ to;
+		$("#result").text(dateValue);
+		var newUrl = window.location.origin + window.location.pathname + "?id=" + getQueryVariable("id") + "&from=" + from + "&to=" + to;
+		$("#result").text(newUrl);
+		window.location.replace(newUrl);
+	} else {
+		$("#result").text("nessuna data selezionata");
+	}
+});
+
+$( "#from" ).val(getQueryVariable("from"));
+$( "#to" ).val(getQueryVariable("to"));
+
+function getQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) {
+            return pair[1];
+        }
+    }
+    return null;
+}
+
+});
+
+</script>
 </head>
 <body>
 	<h1><center>Risultati della valutazione</center></h1>
+	<div align='center'>
+		<label>Periodo dei risultati: &nbsp;</label>
+		<label for="from">dal</label>
+		<input type="text" id="from" name="from" />
+		<label for="to">al</label>
+		<input type="text" id="to" name="to" />
+		<button id="furbo">Aggiorna</button>
+		<div id="result"></div>
+	</div>
+	
     <div class="wrapper">
 
 <?php
@@ -24,7 +97,6 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
     $systems = [];
 	$surveyName = "";
 	
-	//TODO: read survey record, so we can find name, #sentences, #systems
 	$sqlsurvey = "select * from mteval.survey where surveyid = ".trim($_GET["id"]);
 	$resultSurvey = $link->query($sqlsurvey);
 	if ($resultSurvey->num_rows > 0) {
@@ -45,6 +117,10 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 	
 	echo "<h1><center>" . $surveyName . "</center></h1>";
 	
+	// add filter for dates
+	
+	// 
+	
 	$displayrawdata = false;
 	if(isset($_GET["raw"]))
 	{
@@ -53,17 +129,36 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 			$displayrawdata = true;
 	}
 		
-	
+	$withDates = false;
     // Prepare a select statement
-    $sql = "select * from mteval.sentencescore where responseid in ( SELECT id FROM mteval.response where surveyid = ?)";
+	if(isset($_GET["from"]))
+	{
+		$withDates = true;
+		$sql = "select * from mteval.sentencescore where responseid in ( SELECT id FROM mteval.response where surveyid = ? and timestamp >= ? and timestamp <= ?)";
+	}
+	else
+		$sql = "select * from mteval.sentencescore where responseid in ( SELECT id FROM mteval.response where surveyid = ?)";
     
 	$best = array_fill(0, $numsystems, 0);
 	$worst = array_fill(0, $numsystems, 0);
 	$total_answers = 0;
 	
+	$last_response_id = -1;
+	$response_count = 0;
+	
     if($stmt = mysqli_prepare($link, $sql)){
         // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "i", $param_id);
+		if($withDates)
+		{
+			mysqli_stmt_bind_param($stmt, "iss", $param_id, $param_from, $param_to);
+			// set date params
+			$param_from = trim($_GET["from"]);
+			$param_to = trim($_GET["to"]);
+		}
+		else
+		{
+			mysqli_stmt_bind_param($stmt, "i", $param_id);
+		}
         
         // Set parameters
         $param_id = trim($_GET["id"]);
@@ -95,6 +190,13 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 					}
 					$scores = json_decode($row['score']);
 					
+					$current_response_id = $row['responseid'];
+					if( $current_response_id != $last_response_id)
+					{
+						$last_response_id = $current_response_id;
+						$response_count++;
+					}
+					
 					if( isset($best[$scores[0]]) ) 
 						$best[$scores[0]] = $best[$scores[0]]+1;
 					else
@@ -113,6 +215,7 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 				}
                 // Free result set
                 mysqli_free_result($result);
+				
 				
             } else{
                 // No votes yet.
@@ -140,6 +243,8 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 			echo "</tr>";  
 		}
 		echo "</table>";
+		
+		echo "<div id='totalcount'>Abbiamo ricevuto ". $response_count ." risposte</div>";
 		
     // Close statement
     mysqli_stmt_close($stmt);
