@@ -47,7 +47,7 @@ surveyid = int(survey_str)
 
 # now create the html file that contains the survey:
 
-begin_html = "<!DOCTYPE html>\n<html><head><meta charset='UTF-8'><title>Valuta Traduzioni</title> " + \
+begin_html = "<!DOCTYPE html>\n<html><head><meta charset='UTF-8'><title>Valuta Traduzioni</title>\n " + \
              "<link rel='stylesheet' href='css/style.css'>\n" + \
              "<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'>" +\
              "</script> \n" + \
@@ -56,11 +56,11 @@ begin_html = "<!DOCTYPE html>\n<html><head><meta charset='UTF-8'><title>Valuta T
              "<p>Vi chiediamo di valutare delle traduzioni diverse per lo stesso testo. Per ogni frase, " +\
              "vi preghiamo di scegliere la migliore e la peggiore traduzione tra quelle proposte.<br/>\n" +\
              "Quando avete finito, cliccate sul bottone verde in fondo. <br/>Grazie!</p>\n" +\
-             "<div id='page-wrap'>" + \
-             "<form id='myForm' surveyId='{0}'>"
+             "<div id='page-wrap'>\n" + \
+             "<form id='myForm' surveyId='{0}'>\n"
 
-end_html = "</form><div class='end'><button id='btn1' class='button'>Finito!</button></div>\n" +\
-           "<div><p id='postdata'></p></div><p id='results'></p></div>\n" +\
+end_html = "\n</form><div class='end'><button id='btn1' class='button'>Finito!</button></div>\n" +\
+           "<div id='results'></div><div><p id='postdata'></p></div>\n" +\
            "</body></html>\n"
 
 filename = "survey{0}.html"

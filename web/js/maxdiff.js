@@ -15,7 +15,7 @@
 		$(document).ready(function(){
 			var submitted = false;
 			$("#btn1").click(function(){
-				$("#btn1").attr('disabled','disabled')
+				//$("#btn1").attr('disabled','disabled')
 				if(submitted)
 				{				
 					$("#results").text("Hai già risposto!");				
@@ -74,11 +74,16 @@
 					thankyou = "Grazie per aver partecipato a questa valutazione! <br/>"+
 						"Puoi utilizzare questo link per vedere i risultati raccolti finora: "+
 						"<a href='results.php?id="+surveyId+"'>Risultati</a>";
-					$( "#results" ).empty().append( thankyou );
+					$( "#results" ).html( thankyou );
 					
+					submitted = true;
+				})
+				.fail(function (jqXHR, textStatus, errorThrown) {
+					// log the error to the console
+					alert("Qualcosa non ha funzionato. Per favore, controlla di aver valutato tutte le frasi e riprova.");
+					//alert('responsetext:' + jqXHR.responseText + ', status:' + textStatus + ', error:' + errorThrown);
 				});
 				
-				submitted = true;
 	
 			});
 		});

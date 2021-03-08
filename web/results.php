@@ -197,15 +197,18 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 						$response_count++;
 					}
 					
-					if( isset($best[$scores[0]]) ) 
-						$best[$scores[0]] = $best[$scores[0]]+1;
-					else
-						$best[$scores[0]] = 1;
-						
-					if( isset($worst[$scores[1]]) ) 
-						$worst[$scores[1]] = $worst[$scores[1]]+1;
-					else
-						$worst[$scores[1]] = 1;
+					if( $scores != null)
+					{
+						if( isset($best[$scores[0]]) ) 
+							$best[$scores[0]] = $best[$scores[0]]+1;
+						else
+							$best[$scores[0]] = 1;
+							
+						if( isset($worst[$scores[1]]) ) 
+							$worst[$scores[1]] = $worst[$scores[1]]+1;
+						else
+							$worst[$scores[1]] = 1;
+					}
 						
                 }
 				
@@ -238,8 +241,10 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 			$bestpercent = $best[$i]*100 / $total_answers;
 			$worstpercent = $worst[$i]*100 / $total_answers;
 			echo "<tr><td>" . $systems[$i] . "</td>";
-			echo "<td>" . $best[$i] . " (" . number_format($bestpercent, 2, ',', '') . "%)</td>";
-			echo "<td>" . $worst[$i] . " (" . number_format($worstpercent, 2, ',', '') . "%)</td>";
+			$prettyb = str_replace(" ","&nbsp;",str_pad($best[$i], 5, " ", STR_PAD_LEFT));
+			$prettyw = str_replace(" ","&nbsp;",str_pad($worst[$i], 5, " ", STR_PAD_LEFT));
+			echo "<td>" . $prettyb . " (" . number_format($bestpercent, 2, ',', '') . "%)</td>";
+			echo "<td>" . $prettyw . " (" . number_format($worstpercent, 2, ',', '') . "%)</td>";	
 			echo "</tr>";  
 		}
 		echo "</table>";
