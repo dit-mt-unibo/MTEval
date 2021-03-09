@@ -285,6 +285,9 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 		
 		echo "<div id='totalcount'>We have received ". $response_count ." responses</div>";
 		
+		if($response_count == 0)
+			$response_count = 1;
+			
 		// sentence by sentence:
 		echo "<table class='table table-bordered table-striped'>";
 		echo "<thead><tr>";
