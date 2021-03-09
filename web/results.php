@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Risultati della valutazione</title>
+    <title>Evaluation Results</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
         .wrapper{
@@ -51,7 +51,7 @@ $("#furbo").click(function() {
 		$("#result").text(newUrl);
 		window.location.replace(newUrl);
 	} else {
-		$("#result").text("nessuna data selezionata");
+		$("#result").text("no date selected");
 	}
 });
 
@@ -75,20 +75,30 @@ function getQueryVariable(variable) {
 </script>
 </head>
 <body>
-	<h1><center>Risultati della valutazione</center></h1>
+	<h1><center>Evaluation results</center></h1>
 	<div align='center'>
-		<label>Periodo dei risultati: &nbsp;</label>
-		<label for="from">dal</label>
+		<label>time window: &nbsp;</label>
+		<label for="from">from</label>
 		<input type="text" id="from" name="from" />
-		<label for="to">al</label>
+		<label for="to">to</label>
 		<input type="text" id="to" name="to" />
-		<button id="furbo">Aggiorna</button>
+		<button id="furbo">Update</button>
 		<div id="result"></div>
 	</div>
 	
-    <div class="wrapper">
+    <div class="container">
 
 <?php
+function init_matrix(& $array, $x, $y)
+{
+	for ($i = 0; $i < $x; $i++) {
+		$array[$i] = array();
+		for ($j = 0; $j < $y; $j++) {
+			$array[$i][$j]=0;
+		}
+	}
+}
+
 // Check existence of id parameter before processing further
 if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
     // Include config file
@@ -108,7 +118,7 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 			$numsystems = $row["numsystems"];
 			if($numsystems != count($systems))
 				echo "Found ".$systems." instead of ".$numsystems;
-			
+			$numsentences = $row["numsentences"];
 			break; // we only expect one record.
 		}
 	} else {
@@ -145,6 +155,17 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 	
 	$last_response_id = -1;
 	$response_count = 0;
+	
+	$best_per_sentence = array();
+	$worst_per_sentence = array();
+	for ($i = 0; $i < $numsentences; $i++) {
+		$best_per_sentence[$i]= $best;
+	}
+	
+	for ($i = 0; $i < $numsentences; $i++) {
+		$worst_per_sentence[$i]= $best;
+	}
+	
 	
     if($stmt = mysqli_prepare($link, $sql)){
         // Bind variables to the prepared statement as parameters
@@ -188,8 +209,13 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 						echo "<td>" . $row['score'] . "</td>";
 						echo "</tr>";
 					}
-					$scores = json_decode($row['score']);
 					
+					$scores = json_decode($row['score']);
+					if(!isset($scores[0]))
+						$scores[0]=NULL;
+					if(!isset($scores[1]))
+						$scores[1]=NULL;
+						
 					$current_response_id = $row['responseid'];
 					if( $current_response_id != $last_response_id)
 					{
@@ -208,6 +234,14 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 							$worst[$scores[1]] = $worst[$scores[1]]+1;
 						else
 							$worst[$scores[1]] = 1;
+						
+						// update stats by sentence Id:
+						$s_id = $row['sentenceid'];
+						if( isset($scores[0]) && $scores[0] != NULL)
+							$best_per_sentence[$s_id][$scores[0]] = $best_per_sentence[$s_id][$scores[0]] +1;
+						if( isset($scores[1]) && $scores[1] != NULL)
+							$worst_per_sentence[$s_id][$scores[1]] = $worst_per_sentence[$s_id][$scores[1]] +1;	
+							
 					}
 						
                 }
@@ -222,7 +256,7 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 				
             } else{
                 // No votes yet.
-				echo "Nessuna valutazione ricevuta per questo id (" . $param_id . ")";
+				echo "No evaluation received yet for this task (id = " . $param_id . ")";
 				$total_answers = 1;
             }
             
@@ -232,12 +266,12 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 		
 		echo "<table class='table table-bordered table-striped'>";
 		echo "<thead><tr>";
-		echo "<th>Sistema</th>";
-        echo "<th>Migliore</th>";
-        echo "<th>Peggiore</th>";
+		echo "<th>System</th>";
+        echo "<th>Best</th>";
+        echo "<th>Worst</th>";
         echo "</tr></thead>";
 		$len = count($best);
-		for ($i = 0; $i < $len; $i++) {
+		for ($i = 0; $i < $numsystems; $i++) {
 			$bestpercent = $best[$i]*100 / $total_answers;
 			$worstpercent = $worst[$i]*100 / $total_answers;
 			echo "<tr><td>" . $systems[$i] . "</td>";
@@ -249,7 +283,33 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 		}
 		echo "</table>";
 		
-		echo "<div id='totalcount'>Abbiamo ricevuto ". $response_count ." risposte</div>";
+		echo "<div id='totalcount'>We have received ". $response_count ." responses</div>";
+		
+		// sentence by sentence:
+		echo "<table class='table table-bordered table-striped'>";
+		echo "<thead><tr>";
+		echo "<th>Sent #</th>";
+		for ($i = 0; $i < $numsystems; $i++) {
+			echo "<th>" . $systems[$i] . "</th>";
+		}
+        echo "</tr></thead>";
+		
+		echo "<div><p>Results by sentence: </p>";
+		for ($i = 0; $i < $numsentences; $i++) {
+			echo "<tr><td>" . $i . "</td>";
+			for ($j = 0; $j < $numsystems; $j++) {
+				$percent_best =  $best_per_sentence[$i][$j]*100 /  $response_count;
+				$percent_worst = $worst_per_sentence[$i][$j]*100 /  $response_count;
+				echo"<td>";
+				echo "<div style='width: ". $percent_best ."%; background: rgb(128, 177, 133); overflow:visible;'>";
+				echo $best_per_sentence[$i][$j]  . "</div>";
+				echo "<div style='width: ". $percent_worst ."%; background: rgb(200, 0, 30); overflow:visible;'>";
+				echo $worst_per_sentence[$i][$j] . "</div></td>";
+			}
+			echo "</tr>";  
+		}
+		echo "</table></div>";
+		
 		
     // Close statement
     mysqli_stmt_close($stmt);
