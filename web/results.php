@@ -291,9 +291,9 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 		// sentence by sentence:
 		echo "<table class='table table-bordered table-striped'>";
 		echo "<thead><tr>";
-		echo "<th>Sent #</th>";
+		echo "<th  class='col-xs-2'>Sent #</th>";
 		for ($i = 0; $i < $numsystems; $i++) {
-			echo "<th>" . $systems[$i] . "</th>";
+			echo "<th class='col-xs-2'>" . $systems[$i] . "</th>";
 		}
         echo "</tr></thead>";
 		
