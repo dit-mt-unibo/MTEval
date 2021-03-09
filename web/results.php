@@ -237,9 +237,9 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 						
 						// update stats by sentence Id:
 						$s_id = $row['sentenceid'];
-						if( isset($scores[0]) && $scores[0] != NULL)
+						if( isset($scores[0]) )//&& $scores[0] != NULL)
 							$best_per_sentence[$s_id][$scores[0]] = $best_per_sentence[$s_id][$scores[0]] +1;
-						if( isset($scores[1]) && $scores[1] != NULL)
+						if( isset($scores[1]) ) // && $scores[1] != NULL)
 							$worst_per_sentence[$s_id][$scores[1]] = $worst_per_sentence[$s_id][$scores[1]] +1;	
 							
 					}
