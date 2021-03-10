@@ -47,6 +47,7 @@
                                         echo "<th>#</th>";
                                         echo "<th>Name</th>";
                                         echo "<th>Type</th>";
+										echo "<th>Sentences</th>";
                                         echo "<th>Systems</th>";
                                         echo "<th>Action</th>";
                                     echo "</tr>";
@@ -57,6 +58,7 @@
                                         echo "<td>" . $row['surveyid'] . "</td>";
                                         echo "<td>" . $row['name'] . "</td>";
                                         echo "<td>" . $row['type'] . "</td>";
+										echo "<td>" . $row['numsentences'] . "</td>";
                                         echo "<td>" . $row['numsystems'] . "</td>";
                                         echo "<td>";
                                             echo "<a href='read.php?id=". $row['surveyid'] ."' title='View Record' data-toggle='tooltip'><span class='glyphicon glyphicon-eye-open'></span></a>";

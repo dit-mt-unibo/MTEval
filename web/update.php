@@ -69,7 +69,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
          
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "sssssi", $param_name, $param_surveytype, $param_numsystems, $param_numsentences, $param_systems, $param_id);
+            mysqli_stmt_bind_param($stmt, "sssssi", $param_name, $param_surveytype, $param_numsentences, $param_numsystems, $param_systems, $param_id);
             
 			// Set parameters
             $param_name = $name;
@@ -188,6 +188,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                             <input type="text" name="numsentences" class="form-control" value="<?php echo $numsentences; ?>">
                             <span class="help-block"><?php echo $numsentences_err;?></span>
                         </div>
+						
                         <div class="form-group <?php echo (!empty($numsystems_err)) ? 'has-error' : ''; ?>">
                             <label>Num of Systems</label>
                             <input type="text" name="numsystems" class="form-control" value="<?php echo $numsystems; ?>">

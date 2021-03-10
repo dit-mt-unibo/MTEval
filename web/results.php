@@ -123,6 +123,7 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 		}
 	} else {
 		echo "0 results";
+		exit();
 	}
 	
 	echo "<h1><center>" . $surveyName . "</center></h1>";
