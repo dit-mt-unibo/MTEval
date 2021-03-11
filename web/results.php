@@ -286,9 +286,12 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 		
 		echo "<div id='totalcount'>We have received ". $response_count ." responses</div>";
 		
+		echo "<h4><a href='data" . $param_id . ".html'><b>Click here</b></a> to see translations with attributions</h4>";
 		if($response_count == 0)
 			$response_count = 1;
-			
+		
+		echo "<div><h3><center>Results by sentence: </center></h3>";
+
 		// sentence by sentence:
 		echo "<table class='table table-bordered table-striped'>";
 		echo "<thead><tr>";
@@ -298,7 +301,6 @@ if(isset($_GET["id"]) && !empty(trim($_GET["id"]))){
 		}
         echo "</tr></thead>";
 		
-		echo "<div><p>Results by sentence: </p>";
 		for ($i = 0; $i < $numsentences; $i++) {
 			echo "<tr><td>" . $i . "</td>";
 			for ($j = 0; $j < $numsystems; $j++) {

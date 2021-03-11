@@ -71,9 +71,10 @@
 				
 				// Put the results in a div
 				posting.done(function( data ) {
-					thankyou = "Grazie per aver partecipato a questa valutazione! <br/>"+
-						"Puoi utilizzare questo link per vedere i risultati raccolti finora: "+
-						"<a href='results.php?id="+surveyId+"'>Risultati</a>";
+					thankyou = "Thanks for contributing to this evaluation! <br/>"+
+						"Please find the results collected so far "+
+						"<a href='results.php?id="+surveyId+"'>here</a>. <br>"+
+						"<a href='data"+surveyId+".html'>These</a> are the translations with attributions";
 					$( "#results" ).html( thankyou );
 					
 					submitted = true;
